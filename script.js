@@ -1,3 +1,7 @@
+const GameController = (function() {
+    //add event listener that will rescan the array every time any button is clicked and check the return value
+})();
+
 const GameBoard = (function() {
     const _board = ['x', 'x', 'x', 'o', '', 'o', '', 'x', 'x']; //The array that stores current game state
 
@@ -41,5 +45,20 @@ const MarksImages = (function createMarksImages() {
 
     return {x: _xImg, o: _oImg};
 })();
+
+
+const Player = function(name) {
+    
+    const placeMark = function(cellIndex, mark) {
+        if (!GameBoard.getBoard()[cellIndex]) { //if there's no X or O in this cell yet
+            GameBoard.setCellInBoardArray(cellIndex, mark);
+        } else {
+            return "already taken";
+        }
+    }
+
+    return {placeMark};
+};
+
 
 DisplayController.renderBoardToWebpage();
