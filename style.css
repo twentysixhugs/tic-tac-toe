@@ -6,7 +6,9 @@ body {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-/* Where all main things are stored */
+
+/* The container where everything is stored */
+
 .container {
     display: flex;
     flex-direction: column;
@@ -14,6 +16,9 @@ body {
     justify-content: center;
     gap: 12px;
 }
+
+
+/* Gameboard and cells */
 
 #gameboard {
     width: 300px;
@@ -38,9 +43,10 @@ body {
     width: 60%;
 }
 
+
 /* Result display */
+
 #result {
-    display: none;
     flex-direction: center;
     align-items: center;
     justify-content: center;
@@ -53,35 +59,39 @@ body {
     border: 2px solid black;
 }
 
-.shown-flex {
-    display: flex !important;
-}
 
-
+/* Menu with two player name forms */
 
 .menu {
     display: flex;
     flex-direction: column;
     gap: 8px;
     align-items: center;
-}
-
-.player {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    justify-content: space-between;
 
     font-size: 24px;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
+.player {
+    display: none;
+    gap: 12px;
+    width: 100%;
+    justify-content: space-between;
+}
+
 input {
-    width: 200px;
+    width: 180px;
+}
+
+
+/* Game-flow related elements */
+
+.game {
+    display: none /* hidden by default */
 }
 
 button {
-    display: hidden;
+    display: none;
     align-items: center;
     justify-content: center;
 
@@ -94,4 +104,10 @@ button {
 
     border-radius: 10px;
     border: 2px solid black;
+}
+
+
+/* Class for showing elements when needed */
+.shown-flex {
+    display: flex !important;
 }
