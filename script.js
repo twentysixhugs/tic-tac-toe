@@ -19,7 +19,9 @@ const GameBoard = (function() {
     };
 
     const clear = function() {
-        _board.forEach(el => el = '');
+        for (let i = 0; i < _board.length; i++) {
+            _board[i] = '';
+        }
     };
 
     const getWinner = function () { 
@@ -115,43 +117,42 @@ const DisplayController = (function() {
     const _playerForms = document.querySelectorAll(".player"); //nodes Player O/X + name input form
     const _gameResultDiv = document.querySelector("#result");
 
-    _startBtn.addEventListener('click', _handleStartBtnClick);
-
-    function _handleStartBtnClick(e) {
-        _startBtn.classList.toggle("shown-flex"); //Hide it
-        _startBtn.textContent = "Play again"; //When it shows up later, its text will be this
-
-        _currentPlayerDiv.classList.add("shown-flex");
-
-        //scan value in input forms and set each player's name (Player 1 / 2 is set by default in PlayerController)
-        if (_playerForms[0].lastElementChild.value) //input form is lastChild in this case
-            GameFlowController.PlayerController.setPlayerXName(_playerForms[0].lastElementChild.value);
-        if (_playerForms[1].lastElementChild.value)
-            GameFlowController.PlayerController.setPlayerOName(_playerForms[1].lastElementChild.value);
-
-        //clear and hide player forms
-        _playerForms[0].lastElementChild.value = "";
-        _playerForms[1].lastElementChild.value = "";
-
-        _playerForms[0].classList.toggle("shown-flex");
-        _playerForms[1].classList.toggle("shown-flex");
-        
-
-        //called from here only after start/play again button click,
-        //otherwise from GameFlowController
-        showCurrentPlayer(GameFlowController.PlayerController.getCurrentPlayer()); 
-
-        _enableCellClick();
+    //button
+    const _showStartBtn = function () {
+        _startBtn.classList.add("shown-flex");
     };
 
-    const showCurrentPlayer = function (currentPlayer) {
+    const _hideStartBtn = function () {
+        _startBtn.classList.remove("shown-flex");
+    };
+
+    //current player
+    const renderCurrentPlayer = function (currentPlayer) {
         _currentPlayerDiv.textContent = `Current player: ${currentPlayer.name} (${currentPlayer.mark.toUpperCase()})`;
+    };
+
+    const _showCurrentPlayer = function () {
+        _currentPlayerDiv.classList.add('shown-flex');
     };
 
     const _hideCurrentPlayer = function () {
         _currentPlayerDiv.classList.remove('shown-flex');
     };
 
+    
+    //player forms
+    const _resetPlayerForms = function () {
+        //hide
+        _playerForms[0].classList.remove('shown-flex');
+        _playerForms[1].classList.remove('shown-flex');
+
+        //reset so that they are empty after page reload
+        _playerForms[0].lastElementChild.value = "";
+        _playerForms[1].lastElementChild.value = "";
+
+    }
+
+    //game result
     const showWinner = function (winner) {
         _hideCurrentPlayer();
 
@@ -160,6 +161,59 @@ const DisplayController = (function() {
         _gameResultDiv.textContent = `${winner.name} is winner!`;
 
         _disableCellClick();
+
+        _showStartBtn();
+    };
+
+    const _hideResult = function () {
+        _gameResultDiv.classList.remove('shown-flex');
+    }
+
+
+    _startBtn.addEventListener('click', _handleStartBtnClick);
+
+    function _handleStartBtnClick(e) {
+
+        //According to whether or not the game was played, executes different blocks
+        //Defines it by button's text
+
+        if (e.target.textContent === 'Start!') { //If the game hasn't been played yet
+            _hideStartBtn();
+            _startBtn.textContent = 'Play again!';
+
+            _showCurrentPlayer();
+
+            //Scan value in input forms and set each player's name (Player 1 / 2 is set by default in PlayerController)
+            //Input form is lastElementChild
+
+            if (_playerForms[0].lastElementChild.value) {
+                GameFlowController.PlayerController.setPlayerXName(_playerForms[0].lastElementChild.value);
+            }
+
+            if (_playerForms[1].lastElementChild.value) {
+                GameFlowController.PlayerController.setPlayerOName(_playerForms[1].lastElementChild.value);
+            }
+
+            _resetPlayerForms();
+
+            //called from here the first time to display initial value,
+            //then called after each cell click from GameFlowController
+            renderCurrentPlayer(GameFlowController.PlayerController.getCurrentPlayer()); 
+
+            _enableCellClick();
+        } else {
+             //If the game was already played
+            GameBoard.clear();
+            clear();
+
+            _hideResult();
+            _hideStartBtn();
+
+            GameFlowController.PlayerController.resetCurrentPlayer();
+            renderCurrentPlayer(GameFlowController.PlayerController.getCurrentPlayer());
+            _showCurrentPlayer(); 
+            _enableCellClick();
+        }
     };
 
     //place display winner here
@@ -168,7 +222,7 @@ const DisplayController = (function() {
     return {
         clear, 
         renderArray,
-        showCurrentPlayer,
+        renderCurrentPlayer,
         showWinner,
     };
 })();
@@ -195,6 +249,10 @@ const GameFlowController = (function() {
         const changeCurrentPlayer = function () {
             _currentPlayer = (_currentPlayer === _playerX) ? _playerO : _playerX;
         };
+
+        const resetCurrentPlayer = function () {
+            _currentPlayer = _playerX;
+        };
     
         const getCurrentPlayer = function () {
             return _currentPlayer;
@@ -205,11 +263,12 @@ const GameFlowController = (function() {
             getCurrentPlayer,
             setPlayerXName,
             setPlayerOName,
+            resetCurrentPlayer,
         };
     })();
 
     const respondToCellClick = function (index) {
-        if (!GameBoard.getBoard()[index]) { //if index is not undefined (it's undefined when we click on image because of bubbling)
+        if (!GameBoard.getBoard()[index]) {
             GameBoard.pushCellIntoBoardArray(index, PlayerController.getCurrentPlayer().mark);
 
             DisplayController.clear();
@@ -220,7 +279,7 @@ const GameFlowController = (function() {
                 DisplayController.showWinner(PlayerController.getCurrentPlayer());
             } else { //continue playing
                 PlayerController.changeCurrentPlayer();
-                DisplayController.showCurrentPlayer(PlayerController.getCurrentPlayer());
+                DisplayController.renderCurrentPlayer(PlayerController.getCurrentPlayer());
             }
         }
     }
