@@ -75,6 +75,8 @@ const MarksImages = (function createMarksImages() {
 
 
 const DisplayController = (function() {
+
+    /* Interaction with cells */
     const _cellDivs = document.querySelectorAll('.cell');
 
     const renderArray = function() {
@@ -100,46 +102,91 @@ const DisplayController = (function() {
         }, {capture: true, once: true}));
     };
 
+    /* Interaction with menu */
+
+    const _startBtn = document.querySelector("#start");
+    const _currentPlayerDiv = document.querySelector("#current-player");
+    const _playerForms = document.querySelectorAll(".player"); //nodes Player O/X + name input form
+
+    _startBtn.addEventListener('click', _handleStartBtnClick);
+
+    function _handleStartBtnClick(e) {
+        _startBtn.classList.toggle("shown-flex"); //Hide it
+        _startBtn.textContent = "Play again"; //When it shows up later, its text will be this
+
+        //display current player
+        _currentPlayerDiv.classList.toggle("shown-flex");
+
+        //scan value in input forms and set each player's name (Player 1 / 2 is set by default in PlayerController)
+        if (_playerForms[0].lastElementChild.value) //input form is lastChild in this case
+            GameFlowController.PlayerController.setPlayerXName(_playerForms[0].lastElementChild.value);
+        if (_playerForms[1].lastElementChild.value)
+            GameFlowController.PlayerController.setPlayerOName(_playerForms[1].lastElementChild.value);
+
+        //clear and hide player forms
+        _playerForms[0].lastElementChild.value = "";
+        _playerForms[1].lastElementChild.value = "";
+
+        _playerForms[0].classList.toggle("shown-flex");
+        _playerForms[1].classList.toggle("shown-flex");
+        
+
+        //called from here only after start/play again button click,
+        //otherwise from GameFlowController
+        showCurrentPlayer(GameFlowController.PlayerController.getCurrentPlayer()); 
+
+        enableCellClick();
+    };
+
+    const showCurrentPlayer = function (currentPlayer) {
+        _currentPlayerDiv.textContent = `Current player: ${currentPlayer.name} (${currentPlayer.mark.toUpperCase()})`;
+    };
+
+    //place display winner here
+
 
     return {
         enableCellClick, 
         clear, 
-        renderArray
-    };
-})();
-
-
-const menuController = (function() {
-
-})();
-
-
-const PlayerController = (function() {
-    let _playerX = Player('nameX', 'x');
-    let _playerO = Player('nameO', 'o');
-
-    //X makes first move
-    let _currentPlayer = _playerX;
-
-    const changeCurrentPlayer = function () {
-        _currentPlayer = (_currentPlayer === _playerX) ? _playerO : _playerX;
-    };
-
-    const getCurrentPlayer = function () {
-        return _currentPlayer;
-    }
-
-    return {
-        changeCurrentPlayer, 
-        getCurrentPlayer
+        renderArray,
+        showCurrentPlayer,
     };
 })();
 
 
 const GameFlowController = (function() {
 
-    //Enable placing X and O into cells
-    DisplayController.enableCellClick();
+    const PlayerController = (function() {
+        //'Player 1' and 'Player 2' are default names
+        let _playerX = Player('Player 1', 'x');
+        let _playerO = Player('Player 2', 'o');
+
+        const setPlayerXName = function (name) {
+            _playerX.name = name;
+        };
+
+        const setPlayerOName = function (name) {
+            _playerO.name = name;
+        };
+    
+        //X makes first move
+        let _currentPlayer = _playerX;
+    
+        const changeCurrentPlayer = function () {
+            _currentPlayer = (_currentPlayer === _playerX) ? _playerO : _playerX;
+        };
+    
+        const getCurrentPlayer = function () {
+            return _currentPlayer;
+        };
+    
+        return {
+            changeCurrentPlayer, 
+            getCurrentPlayer,
+            setPlayerXName,
+            setPlayerOName,
+        };
+    })();
 
     const respondToCellClick = function (index) {
         if (!GameBoard.getBoard()[index]) { //if index is not undefined (it's undefined when we click on image because of bubbling)
@@ -150,11 +197,21 @@ const GameFlowController = (function() {
 
             if (GameBoard.getWinner()) {
                 console.log(`${GameBoard.getWinner()} is winner`);
+                document.querySelector("#result").classList.toggle('shown-flex');
             } else {
                 PlayerController.changeCurrentPlayer();
+                DisplayController.showCurrentPlayer(PlayerController.getCurrentPlayer());
             }
         }
     }
 
-    return {respondToCellClick};
+    const start = function () {
+
+    }
+
+    return {
+        respondToCellClick, 
+        start,
+        PlayerController,
+    };
 })();
