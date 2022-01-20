@@ -93,13 +93,19 @@ const DisplayController = (function() {
         _cellDivs.forEach(cell => cell.textContent = "");
     };
 
-    const enableCellClick = function () {
-        _cellDivs.forEach(cell => cell.addEventListener('click', (e) => {
-            e.stopPropagation();
-            GameFlowController.respondToCellClick(e.target.dataset.index);
-            //index is undefined when we click on cell with image because of bubbling
-            //GameFlowController will respond to it accordingly
-        }, {capture: true, once: true}));
+    const _cellClickHandler = function (e) {
+        e.stopPropagation();
+        GameFlowController.respondToCellClick(e.target.dataset.index);
+        //index is undefined when we click on cell with image because of bubbling
+        //GameFlowController will respond to it accordingly
+    };
+
+    const _enableCellClick = function () {
+        _cellDivs.forEach(cell => cell.addEventListener('click', _cellClickHandler, {capture: true, once: true}));
+    };
+
+    const _disableCellClick = function () {
+        _cellDivs.forEach(cell => cell.removeEventListener('click', _cellClickHandler, {capture: true, once: true}));
     };
 
     /* Interaction with menu */
@@ -107,6 +113,7 @@ const DisplayController = (function() {
     const _startBtn = document.querySelector("#start");
     const _currentPlayerDiv = document.querySelector("#current-player");
     const _playerForms = document.querySelectorAll(".player"); //nodes Player O/X + name input form
+    const _gameResultDiv = document.querySelector("#result");
 
     _startBtn.addEventListener('click', _handleStartBtnClick);
 
@@ -114,8 +121,7 @@ const DisplayController = (function() {
         _startBtn.classList.toggle("shown-flex"); //Hide it
         _startBtn.textContent = "Play again"; //When it shows up later, its text will be this
 
-        //display current player
-        _currentPlayerDiv.classList.toggle("shown-flex");
+        _currentPlayerDiv.classList.add("shown-flex");
 
         //scan value in input forms and set each player's name (Player 1 / 2 is set by default in PlayerController)
         if (_playerForms[0].lastElementChild.value) //input form is lastChild in this case
@@ -135,21 +141,35 @@ const DisplayController = (function() {
         //otherwise from GameFlowController
         showCurrentPlayer(GameFlowController.PlayerController.getCurrentPlayer()); 
 
-        enableCellClick();
+        _enableCellClick();
     };
 
     const showCurrentPlayer = function (currentPlayer) {
         _currentPlayerDiv.textContent = `Current player: ${currentPlayer.name} (${currentPlayer.mark.toUpperCase()})`;
     };
 
+    const _hideCurrentPlayer = function () {
+        _currentPlayerDiv.classList.remove('shown-flex');
+    };
+
+    const showWinner = function (winner) {
+        _hideCurrentPlayer();
+
+        _gameResultDiv.classList.add("shown-flex");
+
+        _gameResultDiv.textContent = `${winner.name} is winner!`;
+
+        _disableCellClick();
+    };
+
     //place display winner here
 
 
     return {
-        enableCellClick, 
         clear, 
         renderArray,
         showCurrentPlayer,
+        showWinner,
     };
 })();
 
@@ -197,8 +217,8 @@ const GameFlowController = (function() {
 
             if (GameBoard.getWinner()) {
                 console.log(`${GameBoard.getWinner()} is winner`);
-                document.querySelector("#result").classList.toggle('shown-flex');
-            } else {
+                DisplayController.showWinner(PlayerController.getCurrentPlayer());
+            } else { //continue playing
                 PlayerController.changeCurrentPlayer();
                 DisplayController.showCurrentPlayer(PlayerController.getCurrentPlayer());
             }
