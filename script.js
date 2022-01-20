@@ -2,7 +2,10 @@ function Player(name, mark) {
     return {name, mark};
 };
 
+
+
 //Modules
+
 
 const GameBoard = (function() {
     const _board = new Array(9).fill(''); //The array that stores current game state
@@ -12,17 +15,51 @@ const GameBoard = (function() {
     };
 
     const pushCellIntoBoardArray = function(index, mark) {
-        if (true) {
-            _board[index] = mark;
-        }
+        _board[index] = mark;
     };
 
     const clear = function() {
         _board.forEach(el => el = '');
     };
 
-    return {getBoard, pushCellIntoBoardArray, clear};
+    const getWinner = function () { 
+        const _possibleWinsIndexes = [
+            //horizontal
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            //vertical
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            //diagonal
+            [0, 4, 8],
+            [6, 4, 2]
+        ];
+
+        for (const combination of _possibleWinsIndexes) {
+            // if using current combination of indexes encounter three 'x' or 'o'
+            // in _board array (like three subsequent 'x' in the second column, or in a diagonal, etc.)
+            const _xWon = combination.every(index => _board[index] === 'x');
+            const _oWon = combination.every(index => _board[index] === 'o');
+            
+            if (_xWon) return 'x';
+            if (_oWon) return 'o';
+        };
+
+        return false; //otherwise
+    };
+
+
+    return {
+        getBoard,
+        pushCellIntoBoardArray,
+        clear,
+        getWinner
+    };
+
 })();
+
 
 const MarksImages = (function createMarksImages() {
     const _xImg = document.createElement('img');
@@ -35,6 +72,7 @@ const MarksImages = (function createMarksImages() {
 
     return {x: _xImg, o: _oImg};
 })();
+
 
 const DisplayController = (function() {
     const _cellDivs = document.querySelectorAll('.cell');
@@ -63,12 +101,18 @@ const DisplayController = (function() {
     };
 
 
-    return {enableCellClick, clear, renderArray};
+    return {
+        enableCellClick, 
+        clear, 
+        renderArray
+    };
 })();
+
 
 const menuController = (function() {
 
 })();
+
 
 const PlayerController = (function() {
     let _playerX = Player('nameX', 'x');
@@ -85,8 +129,12 @@ const PlayerController = (function() {
         return _currentPlayer;
     }
 
-    return {changeCurrentPlayer, getCurrentPlayer};
+    return {
+        changeCurrentPlayer, 
+        getCurrentPlayer
+    };
 })();
+
 
 const GameFlowController = (function() {
 
@@ -99,8 +147,12 @@ const GameFlowController = (function() {
 
             DisplayController.clear();
             DisplayController.renderArray();
-    
-            PlayerController.changeCurrentPlayer();
+
+            if (GameBoard.getWinner()) {
+                console.log(`${GameBoard.getWinner()} is winner`);
+            } else {
+                PlayerController.changeCurrentPlayer();
+            }
         }
     }
 
