@@ -8,16 +8,30 @@
     </head>
     <body>
         <h1>Tic Tac Toe</h1>
-        <div id="gameboard">
-            <div class="cell" data-index="0"></div>
-            <div class="cell" data-index="1"></div>
-            <div class="cell" data-index="2"></div>
-            <div class="cell" data-index="3"></div>
-            <div class="cell" data-index="4"></div>
-            <div class="cell" data-index="5"></div>
-            <div class="cell" data-index="6"></div>
-            <div class="cell" data-index="7"></div>
-            <div class="cell" data-index="8"></div>
+        <div class="container">
+            <div id="gameboard">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            <div class="menu">
+                <div class="player">
+                    <div>Player X</div>
+                    <input type="text" id="x" value="">
+                </div>
+                <div class="player">
+                    <div>Player O</div>
+                    <input type="text" id="x" value="">
+                </div>
+                <button class="shown-flex" id="start">Start!</button>
+            </div>
         </div>
+        <div id="result">Iaan is winner</div>
     </body>
 </html>
