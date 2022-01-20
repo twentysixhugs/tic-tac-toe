@@ -28,3 +28,21 @@ body {
 .cell img {
     width: 60%;
 }
+
+#result {
+    display: none;
+    flex-direction: center;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    height: 100px;
+    margin-top: 20px;
+
+    font-size: 30px;
+
+    border: 2px solid black;
+}
+
+.shown-flex {
+    display: flex !important;
+}
