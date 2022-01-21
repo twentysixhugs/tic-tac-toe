@@ -55,6 +55,7 @@ h1 {
 
 .cell img {
     width: 60%;
+    filter: saturate(0.8);
 }
 
 
