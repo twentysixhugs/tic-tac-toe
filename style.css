@@ -21,8 +21,8 @@ body {
 /* Gameboard and cells */
 
 #gameboard {
-    width: 300px;
-    height: 300px;
+    width: 400px;
+    height: 400px;
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -41,6 +41,10 @@ body {
 
 .cell img {
     width: 60%;
+}
+
+.winner img {
+    width: 70%;
 }
 
 
@@ -90,7 +94,7 @@ input {
     display: none /* hidden by default */
 }
 
-button {
+#start {
     display: none;
     align-items: center;
     justify-content: center;

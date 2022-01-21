@@ -45,11 +45,11 @@ const GameBoard = (function() {
             const _xWon = combination.every(index => _board[index] === 'x');
             const _oWon = combination.every(index => _board[index] === 'o');
             
-            if (_xWon) return 'x';
-            if (_oWon) return 'o';
+            if (_xWon) return {mark: 'x', combination};
+            if (_oWon) return {mark: 'o', combination};
         };
 
-        return false; //otherwise
+        return {mark: ''}; //otherwise
     };
 
 
@@ -169,6 +169,12 @@ const DisplayController = (function() {
         _gameResultDiv.classList.remove('shown-flex');
     }
 
+    const toggleWinningCellsHighlight = function (combination) {
+        combination.forEach((indexOfCell) => {
+            document.querySelector(`div[data-index="${indexOfCell}"]`).classList.toggle('winner');
+        })
+    }
+    //Start/Play again button
 
     _startBtn.addEventListener('click', _handleStartBtnClick);
 
@@ -202,7 +208,10 @@ const DisplayController = (function() {
 
             _enableCellClick();
         } else {
-             //If the game was already played
+            //If the game was already played
+
+            toggleWinningCellsHighlight(GameBoard.getWinner().combination);
+
             GameBoard.clear();
             clear();
 
@@ -224,6 +233,7 @@ const DisplayController = (function() {
         renderArray,
         renderCurrentPlayer,
         showWinner,
+        toggleWinningCellsHighlight,
     };
 })();
 
@@ -274,18 +284,16 @@ const GameFlowController = (function() {
             DisplayController.clear();
             DisplayController.renderArray();
 
-            if (GameBoard.getWinner()) {
-                console.log(`${GameBoard.getWinner()} is winner`);
+            const winner = GameBoard.getWinner();
+
+            if (winner.mark) {
                 DisplayController.showWinner(PlayerController.getCurrentPlayer());
+                DisplayController.toggleWinningCellsHighlight(winner.combination);
             } else { //continue playing
                 PlayerController.changeCurrentPlayer();
                 DisplayController.renderCurrentPlayer(PlayerController.getCurrentPlayer());
             }
         }
-    }
-
-    const start = function () {
-
     }
 
     return {
