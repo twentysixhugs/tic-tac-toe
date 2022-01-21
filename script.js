@@ -24,6 +24,14 @@ const GameBoard = (function() {
         }
     };
 
+    const isFilled = function () {
+        for (cell of _board) {
+            if (cell === '') return false;
+        }
+        
+        return true;
+    }
+
     const getWinner = function () { 
         const _possibleWinsIndexes = [
             //horizontal
@@ -57,7 +65,8 @@ const GameBoard = (function() {
         getBoard,
         pushCellIntoBoardArray,
         clear,
-        getWinner
+        getWinner,
+        isFilled,
     };
 
 })();
@@ -165,6 +174,18 @@ const DisplayController = (function() {
         _showStartBtn();
     };
 
+    const showTie = function () {
+        _hideCurrentPlayer();
+
+        _gameResultDiv.classList.add("shown-flex");
+
+        _gameResultDiv.textContent = 'Tie';
+
+        _disableCellClick();
+
+        _showStartBtn();
+    }
+
     const _hideResult = function () {
         _gameResultDiv.classList.remove('shown-flex');
     }
@@ -209,8 +230,8 @@ const DisplayController = (function() {
             _enableCellClick();
         } else {
             //If the game was already played
-
-            toggleWinningCellsHighlight(GameBoard.getWinner().combination);
+            if (document.getElementById("result").textContent !== "Tie")
+                toggleWinningCellsHighlight(GameBoard.getWinner().combination);
 
             GameBoard.clear();
             clear();
@@ -234,6 +255,7 @@ const DisplayController = (function() {
         renderCurrentPlayer,
         showWinner,
         toggleWinningCellsHighlight,
+        showTie
     };
 })();
 
@@ -289,9 +311,11 @@ const GameFlowController = (function() {
             if (winner.mark) {
                 DisplayController.showWinner(PlayerController.getCurrentPlayer());
                 DisplayController.toggleWinningCellsHighlight(winner.combination);
-            } else { //continue playing
+            } else if (!GameBoard.isFilled()){ //continue playing
                 PlayerController.changeCurrentPlayer();
                 DisplayController.renderCurrentPlayer(PlayerController.getCurrentPlayer());
+            } else {
+                DisplayController.showTie();
             }
         }
     }
