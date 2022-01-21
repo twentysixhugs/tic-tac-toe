@@ -6,3 +6,5 @@ Practiced using factory functions and the module pattern here
 <a href="https://www.flaticon.com/free-icons/circle" title="circle icons">Circle icon created by Afian Rochmah Afif - Flaticon</a>
 
 <a href="https://www.flaticon.com/free-icons/close" title="close icons">Close icon created by Fuzzee - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/tic-tac-toe" title="tic tac toe icons">Favicon created by Freepik - Flaticon</a>
