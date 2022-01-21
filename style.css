@@ -148,3 +148,13 @@ button {
 .shown-flex {
     display: flex !important;
 }
+
+
+footer {
+    margin-top: 60px;
+}
+
+a {
+    text-decoration: none;
+    color: #2f495f;
+}
