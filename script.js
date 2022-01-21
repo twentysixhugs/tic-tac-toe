@@ -300,7 +300,7 @@ const GameFlowController = (function() {
     })();
 
     const respondToCellClick = function (index) {
-        if (!GameBoard.getBoard()[index]) {
+        if (!GameBoard.getBoard()[index]) { //make sure only clicks on empty cells are responded to
             GameBoard.pushCellIntoBoardArray(index, PlayerController.getCurrentPlayer().mark);
 
             DisplayController.clear();
