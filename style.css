@@ -55,12 +55,22 @@ h1 {
 
 .cell img {
     width: 60%;
-    filter: saturate(0.8);
 }
 
 
 .winner img {
-    width: 80%;
+    -webkit-animation: blink1 1s linear infinite;
+            animation: blink1 1s linear ease-out;
+}
+
+@-webkit-keyframes blink1 {
+    0% { opacity: 0;}
+    100% { opacity: 1;}
+}
+
+@keyframes blink1 {
+    0% { opacity: 0;}
+    100% { opacity: 1;}
 }
 
 
